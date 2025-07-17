@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: fundy
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fundy-front
+  namespace: fundy
+  labels:
+    app: fundy-front
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fundy-front
+  template:
+    metadata:
+      labels:
+        app: fundy-front
+    spec:
+      containers:
+        - name: fundy-front
+          image: kiik52/fundy-fe-pipe:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: production
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fundy-fe-service
+  namespace: fundy
+spec:
+  selector:
+    app: fundy-front
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: ClusterIP
